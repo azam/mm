@@ -54,6 +54,7 @@ class MavensMateClient(object):
             self.metadata_server_url    = self.credentials['metadata_server_url']   if 'metadata_server_url' in self.credentials else None
             self.server_url             = self.credentials['server_url']            if 'server_url' in self.credentials else None
             self.org_type               = self.credentials['org_type']              if 'org_type' in self.credentials else 'production'
+            self.client_name            = self.credentials['client_name']           if 'client_name' in self.credentials else config.mm_client_name + u'/' + config.mm_version
             
             if 'org_url' in self.credentials and self.credentials['org_url'] != None and self.credentials['org_url'] != '':
                 self.endpoint = util.get_soap_url_from_custom_url(self.credentials["org_url"])
@@ -903,14 +904,18 @@ class MavensMateClient(object):
                 wsdl_location = os.path.join(config.project.location,'config','partner.xml')
         except:
             pass
-
-        return SforcePartnerClient(
+        client = SforcePartnerClient(
             wsdl_location, 
             apiVersion=util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
             metadata_server_url=self.metadata_server_url, 
             server_url=self.endpoint)
+
+        callOptions = client.generateHeader('CallOptions')
+        callOptions.client = self.client_name
+        client.setCallOptions(callOptions)
+        return client
 
     def __get_metadata_client(self):
         if int(float(util.SFDC_API_VERSION)) >= 29:
@@ -924,13 +929,17 @@ class MavensMateClient(object):
         except:
            pass
 
-        return SforceMetadataClient(
+        client = SforceMetadataClient(
             wsdl_location, 
             apiVersion=util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
             url=self.metadata_server_url, 
             server_url=self.endpoint)
+        callOptions = client.generateHeader('CallOptions')
+        callOptions.client = self.client_name
+        client.setCallOptions(callOptions)
+        return client
 
     def __get_apex_client(self):
         if int(float(util.SFDC_API_VERSION)) >= 29:
@@ -944,13 +953,17 @@ class MavensMateClient(object):
         except:
             pass
 
-        return SforceApexClient(
+        client = SforceApexClient(
             wsdl_location, 
             apiVersion=util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
             metadata_server_url=self.metadata_server_url, 
             server_url=self.endpoint)
+        callOptions = client.generateHeader('CallOptions')
+        callOptions.client = self.client_name
+        client.setCallOptions(callOptions)
+        return client
 
     def __get_tooling_client(self):
         if int(float(util.SFDC_API_VERSION)) >= 29:
@@ -964,13 +977,17 @@ class MavensMateClient(object):
         except:
             pass
 
-        return SforceToolingClient(
+        client = SforceToolingClient(
             wsdl_location, 
             apiVersion=util.SFDC_API_VERSION, 
             environment=self.org_type, 
             sid=self.sid, 
             metadata_server_url=self.metadata_server_url, 
             server_url=self.endpoint)
+        callOptions = client.generateHeader('CallOptions')
+        callOptions.client = self.client_name
+        client.setCallOptions(callOptions)
+        return client
 
     def __exception_handler(self, result, name=""):
         url = result.url

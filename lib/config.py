@@ -5,6 +5,8 @@ import sys
 import time
 import tempfile
 
+mm_client_name = u'MavensMate'
+mm_version = u'0.38.2'
 mm_start = time.time()
 
 logging.raiseExceptions = False
